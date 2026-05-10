@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { coupons } from './data';
-import { Download, X, Sparkles, User, Heart, Gift, Milestone } from 'lucide-react';
+import { Download, X, Sparkles, User, Heart, Gift, Milestone, Copy, Share2, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import confetti from 'canvas-confetti';
 import Roadmap from './Roadmap';
@@ -12,6 +12,7 @@ function App() {
   const [mothersName, setMothersName] = useState<string>('');
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showAboutModal, setShowAboutModal] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
   
   const [customTitle, setCustomTitle] = useState<string>('I Owe You');
   const [customDescription, setCustomDescription] = useState<string>('Describe your special favor here...');
@@ -54,6 +55,52 @@ function App() {
       console.error('Failed to generate image', error);
     }
   };
+
+  const handleCopy = async () => {
+    if (!couponRef.current) return;
+    try {
+      const canvas = await html2canvas(couponRef.current, { scale: 3, useCORS: true, backgroundColor: null });
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000);
+          } catch (e) {
+            console.error('Clipboard error', e);
+            alert('Your browser does not support copying images directly. Please use Download or Share.');
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Failed to copy', error);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!couponRef.current) return;
+    try {
+      const canvas = await html2canvas(couponRef.current, { scale: 3, useCORS: true, backgroundColor: null });
+      canvas.toBlob(async (blob) => {
+        if (blob && navigator.share) {
+          const file = new File([blob], `MomCredit-${mothersName.replace(/\s+/g, '-')}.png`, { type: 'image/png' });
+          try {
+            await navigator.share({
+              title: 'MomCredits',
+              text: 'Check out this magical MomCredit!',
+              files: [file]
+            });
+          } catch (e) {
+            console.error('Error sharing', e);
+          }
+        } else {
+          alert('Sharing files is not supported on this device/browser. Please download or copy the image instead.');
+        }
+      });
+    } catch (error) {
+      console.error('Failed to share', error);
+    }
+  };
   const allCoupons = [...coupons, {
     id: 'custom',
     title: customTitle,
@@ -69,24 +116,24 @@ function App() {
   return (
     <div className="min-h-screen relative pb-32 pt-24 px-4 max-w-6xl mx-auto">
       {/* Navigation */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[55] glassmorphism bg-white/70 backdrop-blur-xl p-1.5 rounded-full shadow-lg border border-white flex items-center gap-1">
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[55] glassmorphism bg-white/70 backdrop-blur-xl p-1.5 rounded-full shadow-lg border border-white flex items-center gap-1 sm:gap-2">
         <button 
           onClick={() => setCurrentView('app')}
-          className={`px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-all duration-300 ${currentView === 'app' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+          className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-300 ${currentView === 'app' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
         >
           <Gift className="w-4 h-4" />
-          Mom Credits
+          MomCredits
         </button>
         <button 
           onClick={() => setShowAboutModal(true)}
-          className={`px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-all duration-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50`}
+          className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-300 text-slate-500 hover:text-slate-800 hover:bg-slate-50`}
         >
           <Heart className="w-4 h-4" />
           About
         </button>
         <button 
           onClick={() => setCurrentView('roadmap')}
-          className={`px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-all duration-300 ${currentView === 'roadmap' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
+          className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all duration-300 ${currentView === 'roadmap' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}
         >
           <Milestone className="w-4 h-4" />
           Roadmap
@@ -311,7 +358,7 @@ function App() {
               
               <div className="border-t-2 border-dashed border-slate-200 pt-8 relative z-10">
                 <p className="text-slate-500 text-sm mb-2 font-medium uppercase tracking-wider">Granted With Love To</p>
-                <p className="text-4xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-600 pb-2">
+                <p className="text-4xl font-serif font-bold text-rose-600 pb-2">
                   {mothersName}
                 </p>
                 <p className="text-slate-400 text-sm mt-1">From: <span className="font-semibold text-slate-600">{userName}</span></p>
@@ -327,22 +374,38 @@ function App() {
               </div>
             </div>
             
-            {/* Download Button */}
-            <button
-              onClick={handleDownload}
-              className="w-full mt-6 py-5 rounded-2xl bg-slate-900 text-white font-bold text-xl flex items-center justify-center gap-3 hover:bg-slate-800 active:scale-95 transition-all shadow-xl hover:shadow-2xl"
-            >
-              <Download className="w-6 h-6" />
-              Download & Share
-            </button>
+            {/* Action Buttons */}
+            <div className="grid grid-cols-3 gap-3 mt-6">
+              <button
+                onClick={handleCopy}
+                className="py-4 rounded-2xl bg-slate-100 text-slate-700 font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-2 hover:bg-slate-200 active:scale-95 transition-all"
+              >
+                {isCopied ? <Check className="w-6 h-6 text-green-500" /> : <Copy className="w-6 h-6" />}
+                {isCopied ? 'Copied!' : 'Copy'}
+              </button>
+              <button
+                onClick={handleDownload}
+                className="py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-2 hover:bg-slate-800 active:scale-95 transition-all shadow-lg hover:shadow-xl"
+              >
+                <Download className="w-6 h-6" />
+                Save
+              </button>
+              <button
+                onClick={handleShare}
+                className="py-4 rounded-2xl bg-slate-100 text-slate-700 font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-2 hover:bg-slate-200 active:scale-95 transition-all"
+              >
+                <Share2 className="w-6 h-6" />
+                Share
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* About Modal */}
       {showAboutModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-opacity animate-in fade-in duration-300">
-          <div className="relative w-full max-w-lg p-[3px] rounded-[2.5rem] bg-gradient-to-br from-rose-400 via-pink-400 to-sunset-400 animate-in zoom-in-75 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_20px_60px_-15px_rgba(244,63,94,0.5)]">
+        <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-opacity animate-in fade-in duration-300 overflow-y-auto">
+          <div className="relative w-full max-w-lg my-8 sm:my-auto shrink-0 p-[3px] rounded-[2.5rem] bg-gradient-to-br from-rose-400 via-pink-400 to-sunset-400 animate-in zoom-in-75 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_20px_60px_-15px_rgba(244,63,94,0.5)]">
             <div className="glassmorphism bg-white/85 p-8 sm:p-10 rounded-[calc(2.5rem-3px)] relative overflow-hidden h-full">
               
               {/* Close Button */}
