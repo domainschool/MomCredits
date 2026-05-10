@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glassmorphism {
+    @apply bg-white/40 backdrop-blur-md border border-white/50 shadow-xl;
+  }
+}
+
+body {
+  @apply font-sans bg-gradient-to-br from-rose-50 via-pink-100 to-purple-100 min-h-screen text-slate-800 antialiased overflow-x-hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-serif;
+}
