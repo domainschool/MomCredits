@@ -122,14 +122,24 @@ export default function Roadmap() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-lg shadow-indigo-500/30">
+            <a 
+              href="https://github.com/domainschool/MomCredits" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-lg shadow-indigo-500/30"
+            >
               <GitPullRequest className="w-5 h-5" />
               Contribute on GitHub
-            </button>
-            <button className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-lg flex items-center justify-center gap-3 transition-colors border border-white/20">
+            </a>
+            <a 
+              href="https://www.linkedin.com/posts/activity-7459316818449440768-YWB5?utm_source=share&utm_medium=member_desktop&rcm=ACoAABuRjIoBWY2VkatWD9tSfb8aqZNIaAcuNMI" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-lg flex items-center justify-center gap-3 transition-colors border border-white/20"
+            >
               <Lightbulb className="w-5 h-5" />
               Submit an Idea
-            </button>
+            </a>
           </div>
         </div>
         
