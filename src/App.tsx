@@ -167,30 +167,41 @@ function App() {
             key={coupon.id}
             onClick={() => setSelectedId(coupon.id)}
             className={`
-              relative p-8 rounded-[2rem] cursor-pointer transition-all duration-300 transform hover:-translate-y-2
-              glassmorphism overflow-hidden group
+              relative p-5 sm:p-6 rounded-[1.5rem] cursor-pointer transition-all duration-300 transform hover:-translate-y-1
+              glassmorphism overflow-hidden group flex flex-col
               ${selectedId === coupon.id ? 'ring-4 ring-gold-400 shadow-2xl scale-[1.02] bg-white/80' : 'hover:shadow-xl hover:bg-white/60'}
             `}
           >
             {/* Background Gradient Hint */}
-            <div className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${coupon.style.gradient} rounded-full blur-3xl opacity-20 -mr-12 -mt-12 group-hover:opacity-40 transition-opacity duration-500`} />
+            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${coupon.style.gradient} rounded-full blur-3xl opacity-20 -mr-8 -mt-8 group-hover:opacity-40 transition-opacity duration-500`} />
             
-            <div className="text-6xl mb-6 relative z-10 transform group-hover:scale-110 transition-transform duration-300 origin-bottom-left">
-              {coupon.style.icon}
+            <div className="flex items-center gap-3 mb-3 relative z-10">
+              <div className="text-4xl sm:text-5xl transform group-hover:scale-110 transition-transform duration-300 origin-center">
+                {coupon.style.icon}
+              </div>
+              
+              <div className="flex-1">
+                {coupon.isCustom ? (
+                  <input
+                    type="text"
+                    value={customTitle}
+                    onChange={(e) => setCustomTitle(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xl sm:text-2xl font-bold text-slate-800 bg-transparent border-b-2 border-slate-200 focus:border-rose-500 outline-none w-full placeholder-slate-400 transition-colors leading-tight"
+                    placeholder="Enter Title..."
+                  />
+                ) : (
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">{coupon.title}</h3>
+                )}
+              </div>
             </div>
-            
+
             {coupon.isCustom ? (
-              <div onClick={() => setSelectedId(coupon.id)}>
-                <input
-                  type="text"
-                  value={customTitle}
-                  onChange={(e) => setCustomTitle(e.target.value)}
-                  className="text-2xl font-bold text-slate-800 mb-3 relative z-10 bg-transparent border-b-2 border-slate-200 focus:border-rose-500 outline-none w-full placeholder-slate-400 transition-colors"
-                  placeholder="Enter Title..."
-                />
+              <div className="relative z-10">
                 <textarea
                   value={customDescription}
                   onChange={(e) => setCustomDescription(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   onFocus={() => {
                     if (customDescription === 'Describe your special favor here...') {
                       setCustomDescription('');
@@ -201,21 +212,18 @@ function App() {
                       setCustomDescription('Describe your special favor here...');
                     }
                   }}
-                  className="text-slate-600 text-base leading-relaxed relative z-10 bg-transparent border-b-2 border-slate-200 focus:border-rose-500 outline-none w-full resize-none transition-colors"
+                  className="text-slate-600 text-sm sm:text-base leading-relaxed bg-transparent border-b-2 border-slate-200 focus:border-rose-500 outline-none w-full resize-none transition-colors"
                   rows={2}
                 />
               </div>
             ) : (
-              <>
-                <h3 className="text-2xl font-bold text-slate-800 mb-3 relative z-10">{coupon.title}</h3>
-                <p className="text-slate-600 text-base leading-relaxed relative z-10">{coupon.description}</p>
-              </>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed relative z-10">{coupon.description}</p>
             )}
             
             {/* Selected Indicator */}
             {selectedId === coupon.id && (
-              <div className="absolute top-6 right-6 bg-gradient-to-r from-gold-400 to-amber-500 text-white rounded-full p-2 shadow-lg animate-bounce">
-                <Sparkles size={20} />
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-gold-400 to-amber-500 text-white rounded-full p-1.5 shadow-lg animate-bounce z-20">
+                <Sparkles size={16} />
               </div>
             )}
           </div>
